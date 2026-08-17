@@ -55,13 +55,14 @@ public class PropertyService {
         List<Property> properties = propertyRepo.findAll();
 
         return properties.stream()
-                .filter(p -> city == null || p.getCity().equalsIgnoreCase(city))
-                .filter(p -> type == null || p.getType().name().equalsIgnoreCase(type))
+                .filter(p -> city == null || city.isBlank() || p.getCity().toLowerCase().contains(city.trim().toLowerCase()))
+                .filter(p -> type == null || type.isBlank() || p.getType().name().equalsIgnoreCase(type))
                 .filter(p -> minPrice == null || p.getPrice().compareTo(minPrice) >= 0)
                 .filter(p -> maxPrice == null || p.getPrice().compareTo(maxPrice) <= 0)
                 .map(this::mapToResponse)
                 .toList();
     }
+
     public List<PropertyResponse> getPropertiesByOwner(String email) {
         return propertyRepo.findAll()
                 .stream()
@@ -86,6 +87,7 @@ public class PropertyService {
 
         propertyRepo.deleteById(id);
     }
+
     private PropertyResponse mapToResponse(Property property) {
         return PropertyResponse.builder()
                 .id(property.getId())
